@@ -123,6 +123,19 @@ func ResourceWebACL() *schema.Resource {
 								},
 							},
 						},
+						// "managed_rule_group_config": {
+						// 	Type:     schema.TypeList,
+						// 	Optional: true,
+						// 	MaxItems: 1,
+						// 	Elem: &schema.Resource{
+						// 		Schema: map[string]*schema.Schema{
+						// 			"login_path":     emptySchema(),
+						// 			"password_field": emptySchema(),
+						// 			"payload_type":   emptySchema(),
+						// 			"username_field": emptySchema(),
+						// 		},
+						// 	},
+						// },
 						"priority": {
 							Type:     schema.TypeInt,
 							Required: true,

@@ -962,8 +962,35 @@ func expandManagedRuleGroupStatement(l []interface{}) *wafv2.ManagedRuleGroupSta
 	if v, ok := m["version"]; ok && v != "" {
 		r.Version = aws.String(v.(string))
 	}
+	// ADDED
+	if s, ok := m["managed_rule_group_config"].([]interface{}); ok && len(s) > 0 && s[0] != nil {
+		r.ManagedRuleGroupConfigs = expandManagedRuleGroupConfig(s[0].(map[string]interface{}))
+	}
 
 	return r
+}
+
+// ADDED
+func expandManagedRuleGroupConfig(m map[string]interface{}) []*wafv2.ManagedRuleGroupConfig {
+	r1 := &wafv2.ManagedRuleGroupConfig{
+		LoginPath: aws.String(m["login_path"].(string)),
+	}
+	r2 := &wafv2.ManagedRuleGroupConfig{
+		PayloadType: aws.String(m["payload_type"].(string)),
+	}
+	r3 := &wafv2.ManagedRuleGroupConfig{
+		PasswordField: &wafv2.PasswordField{Identifier: aws.String(m["password_field"].(string))},
+	}
+	r4 := &wafv2.ManagedRuleGroupConfig{
+		UsernameField: &wafv2.UsernameField{Identifier: aws.String(m["username_field"].(string))},
+	}
+	configs := make([]*wafv2.ManagedRuleGroupConfig, 0)
+	configs = append(configs, r1)
+	configs = append(configs, r2)
+	configs = append(configs, r3)
+	configs = append(configs, r4)
+
+	return configs
 }
 
 func expandRateBasedStatement(l []interface{}) *wafv2.RateBasedStatement {
