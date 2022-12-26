@@ -964,33 +964,48 @@ func expandManagedRuleGroupStatement(l []interface{}) *wafv2.ManagedRuleGroupSta
 	}
 	// ADDED
 	if s, ok := m["managed_rule_group_config"].([]interface{}); ok && len(s) > 0 && s[0] != nil {
-		r.ManagedRuleGroupConfigs = expandManagedRuleGroupConfig(s[0].(map[string]interface{}))
+		r.ManagedRuleGroupConfigs = expandManagedRuleGroupConfigs(s[0].(map[string]interface{}))
 	}
 
 	return r
 }
 
 // ADDED
-func expandManagedRuleGroupConfig(m map[string]interface{}) []*wafv2.ManagedRuleGroupConfig {
-	r1 := &wafv2.ManagedRuleGroupConfig{
-		LoginPath: aws.String(m["login_path"].(string)),
-	}
-	r2 := &wafv2.ManagedRuleGroupConfig{
-		PayloadType: aws.String(m["payload_type"].(string)),
-	}
-	r3 := &wafv2.ManagedRuleGroupConfig{
-		PasswordField: &wafv2.PasswordField{Identifier: aws.String(m["password_field"].(string))},
-	}
-	r4 := &wafv2.ManagedRuleGroupConfig{
-		UsernameField: &wafv2.UsernameField{Identifier: aws.String(m["username_field"].(string))},
-	}
-	configs := make([]*wafv2.ManagedRuleGroupConfig, 0)
-	configs = append(configs, r1)
-	configs = append(configs, r2)
-	configs = append(configs, r3)
-	configs = append(configs, r4)
+func expandManagedRuleGroupConfigs(m map[string]interface{}) []*wafv2.ManagedRuleGroupConfig {
+	c := make([]*wafv2.ManagedRuleGroupConfig, 0)
 
-	return configs
+	if v, ok := m["login_path"]; ok {
+		c = append(c, &wafv2.ManagedRuleGroupConfig{
+			LoginPath: aws.String(v.(string)),
+		})
+
+	}
+
+	if v, ok := m["payload_type"]; ok {
+		c = append(c, &wafv2.ManagedRuleGroupConfig{
+			PayloadType: aws.String(v.(string)),
+		})
+
+	}
+
+	if v, ok := m["password_field"]; ok {
+		c = append(c, &wafv2.ManagedRuleGroupConfig{
+			PasswordField: &wafv2.PasswordField{
+				Identifier: aws.String(v.(string)),
+			},
+		})
+
+	}
+
+	if v, ok := m["username_field"]; ok {
+		c = append(c, &wafv2.ManagedRuleGroupConfig{
+			UsernameField: &wafv2.UsernameField{
+				Identifier: aws.String(v.(string)),
+			},
+		})
+
+	}
+	return c
 }
 
 func expandRateBasedStatement(l []interface{}) *wafv2.RateBasedStatement {
