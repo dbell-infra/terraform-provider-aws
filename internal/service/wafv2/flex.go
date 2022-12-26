@@ -1937,8 +1937,38 @@ func flattenManagedRuleGroupStatement(apiObject *wafv2.ManagedRuleGroupStatement
 	if apiObject.Version != nil {
 		tfMap["version"] = aws.StringValue(apiObject.Version)
 	}
+	if apiObject.ManagedRuleGroupConfigs != nil {
+		tfMap["managed_rule_group_config"] = []interface{}{flattenManagedRuleGroupConfigs(apiObject.ManagedRuleGroupConfigs)}
+	}
 
 	return []interface{}{tfMap}
+}
+
+func flattenManagedRuleGroupConfigs(c []*wafv2.ManagedRuleGroupConfig) interface{} {
+	tfMap := map[string]interface{}{}
+
+	for _, config := range c {
+		if config.AWSManagedRulesBotControlRuleSet != nil {
+			tfMap["inspection_level"] = aws.StringValue(config.AWSManagedRulesBotControlRuleSet.InspectionLevel)
+		}
+		if config.LoginPath != nil {
+			tfMap["login_path"] = aws.StringValue(config.LoginPath)
+
+		}
+		if config.PasswordField != nil {
+			tfMap["password_field"] = aws.StringValue(config.PasswordField.Identifier)
+		}
+
+		if config.UsernameField != nil {
+			tfMap["username_field"] = aws.StringValue(config.UsernameField.Identifier)
+		}
+		if config.PayloadType != nil {
+			tfMap["payload_type"] = aws.StringValue(config.PayloadType)
+		}
+	}
+
+	return tfMap
+
 }
 
 func flattenRateBasedStatement(apiObject *wafv2.RateBasedStatement) interface{} {
