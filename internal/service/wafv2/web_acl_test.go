@@ -607,6 +607,80 @@ func TestAccWAFV2WebACL_ManagedRuleGroup_basic(t *testing.T) {
 	})
 }
 
+func TestAccWAFV2WebACL_ManagedRuleGroup_ManagedRuleGroupConfig(t *testing.T) {
+	var v wafv2.WebACL
+	webACLName := sdkacctest.RandomWithPrefix(acctest.ResourcePrefix)
+	resourceName := "aws_wafv2_web_acl.test"
+
+	resource.ParallelTest(t, resource.TestCase{
+		PreCheck:                 func() { acctest.PreCheck(t); testAccPreCheckScopeRegional(t) },
+		ErrorCheck:               acctest.ErrorCheck(t, wafv2.EndpointsID),
+		ProtoV5ProviderFactories: acctest.ProtoV5ProviderFactories,
+		CheckDestroy:             testAccCheckWebACLDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccWebACLConfig_managedRuleGroupStatement(webACLName),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckWebACLExists(resourceName, &v),
+					acctest.MatchResourceAttrRegionalARN(resourceName, "arn", "wafv2", regexp.MustCompile(`regional/webacl/.+$`)),
+					resource.TestCheckResourceAttr(resourceName, "name", webACLName),
+					resource.TestCheckResourceAttr(resourceName, "rule.#", "1"),
+					resource.TestCheckTypeSetElemNestedAttrs(resourceName, "rule.*", map[string]string{
+						"name":                      "rule-1",
+						"action.#":                  "0",
+						"override_action.#":         "1",
+						"override_action.0.count.#": "0",
+						"override_action.0.none.#":  "1",
+						"statement.#":               "1",
+						"statement.0.managed_rule_group_statement.#":                        "1",
+						"statement.0.managed_rule_group_statement.0.name":                   "AWSManagedRulesATPRuleSet",
+						"statement.0.managed_rule_group_statement.0.vendor_name":            "AWS",
+						"statement.0.managed_rule_group_statement.0.excluded_rule.#":        "0",
+						"statement.0.managed_rule_group_statement.0.scope_down_statement.#": "0",
+						"statement.0.managed_rule_group_statement.0.managed_rule_group_config.0.login_path.#": "/login",
+						"statement.0.managed_rule_group_statement.0.managed_rule_group_config.0.password_field.#": "/password",
+						"statement.0.managed_rule_group_statement.0.managed_rule_group_config.0.payload_type.#": "JSON",
+						"statement.0.managed_rule_group_statement.0.managed_rule_group_config.0.username_field.#": "/username",
+					}),
+				),
+			},
+			{
+				Config: testAccWebACLConfig_managedRuleGroupStatementUpdate(webACLName),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckWebACLExists(resourceName, &v),
+					acctest.MatchResourceAttrRegionalARN(resourceName, "arn", "wafv2", regexp.MustCompile(`regional/webacl/.+$`)),
+					resource.TestCheckResourceAttr(resourceName, "name", webACLName),
+					resource.TestCheckResourceAttr(resourceName, "rule.#", "1"),
+					resource.TestCheckTypeSetElemNestedAttrs(resourceName, "rule.*", map[string]string{
+						"name":                      "rule-1",
+						"action.#":                  "0",
+						"override_action.#":         "1",
+						"override_action.0.count.#": "0",
+						"override_action.0.none.#":  "1",
+						"statement.#":               "1",
+						"statement.0.managed_rule_group_statement.#":                        "1",
+						"statement.0.managed_rule_group_statement.0.name":                   "AWSManagedRulesATPRuleSet",
+						"statement.0.managed_rule_group_statement.0.vendor_name":            "AWS",
+						"statement.0.managed_rule_group_statement.0.excluded_rule.#":        "0",
+						"statement.0.managed_rule_group_statement.0.scope_down_statement.#": "0",
+						"statement.0.managed_rule_group_statement.0.managed_rule_group_config.0.login_path.#": "/app-login",
+						"statement.0.managed_rule_group_statement.0.managed_rule_group_config.0.password_field.#": "/app-password",
+						"statement.0.managed_rule_group_statement.0.managed_rule_group_config.0.payload_type.#": "JSON",
+						"statement.0.managed_rule_group_statement.0.managed_rule_group_config.0.username_field.#": "/app-username",
+					}),
+
+				),
+			},
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+				ImportStateIdFunc: testAccWebACLImportStateIdFunc(resourceName),
+			},
+		},
+	})
+}
+
 func TestAccWAFV2WebACL_ManagedRuleGroup_specifyVersion(t *testing.T) {
 	var v wafv2.WebACL
 	webACLName := sdkacctest.RandomWithPrefix(acctest.ResourcePrefix)
