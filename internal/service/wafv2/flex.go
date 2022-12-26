@@ -974,21 +974,21 @@ func expandManagedRuleGroupStatement(l []interface{}) *wafv2.ManagedRuleGroupSta
 func expandManagedRuleGroupConfigs(m map[string]interface{}) []*wafv2.ManagedRuleGroupConfig {
 	c := make([]*wafv2.ManagedRuleGroupConfig, 0)
 
-	if v, ok := m["login_path"]; ok {
+	if v, ok := m["login_path"]; ok && len(v.(string)) > 0 {
 		c = append(c, &wafv2.ManagedRuleGroupConfig{
 			LoginPath: aws.String(v.(string)),
 		})
 
 	}
 
-	if v, ok := m["payload_type"]; ok {
+	if v, ok := m["payload_type"]; ok && len(v.(string)) > 0 {
 		c = append(c, &wafv2.ManagedRuleGroupConfig{
 			PayloadType: aws.String(v.(string)),
 		})
 
 	}
 
-	if v, ok := m["password_field"]; ok {
+	if v, ok := m["password_field"]; ok && len(v.(string)) > 0 {
 		c = append(c, &wafv2.ManagedRuleGroupConfig{
 			PasswordField: &wafv2.PasswordField{
 				Identifier: aws.String(v.(string)),
@@ -997,13 +997,21 @@ func expandManagedRuleGroupConfigs(m map[string]interface{}) []*wafv2.ManagedRul
 
 	}
 
-	if v, ok := m["username_field"]; ok {
+	if v, ok := m["username_field"]; ok && len(v.(string)) > 0 {
 		c = append(c, &wafv2.ManagedRuleGroupConfig{
 			UsernameField: &wafv2.UsernameField{
 				Identifier: aws.String(v.(string)),
 			},
 		})
 
+	}
+
+	if v, ok := m["inspection_level"]; ok && len(v.(string)) > 0 {
+		c = append(c, &wafv2.ManagedRuleGroupConfig{
+			AWSManagedRulesBotControlRuleSet: &wafv2.AWSManagedRulesBotControlRuleSet{
+				InspectionLevel: aws.String(v.(string)),
+			},
+		})
 	}
 	return c
 }

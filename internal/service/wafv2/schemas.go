@@ -957,7 +957,7 @@ func managedRuleGroupConfigSchema() *schema.Schema {
 					Type:     schema.TypeString,
 					Optional: true,
 					ValidateFunc: validation.All(
-						validation.StringMatch(regexp.MustCompile(`(JSON|FORM_ENCODED)`), "allowed values are JSON | FORM_ENCODED"),
+						validation.StringMatch(regexp.MustCompile(`(JSON|FORM_ENCODED)`), "valid values are JSON | FORM_ENCODED"),
 					),
 				},
 				"username_field": {
@@ -966,6 +966,13 @@ func managedRuleGroupConfigSchema() *schema.Schema {
 					ValidateFunc: validation.All(
 						validation.StringLenBetween(1, 512),
 						validation.StringMatch(regexp.MustCompile(`.*\S.*`), `must conform to pattern .*\S.* `),
+					),
+				},
+				"inspection_level": {
+					Type:     schema.TypeString,
+					Optional: true,
+					ValidateFunc: validation.All(
+						validation.StringMatch(regexp.MustCompile(`(COMMON|TARGETED)`), "valid values are COMMON | TARGETED"),
 					),
 				},
 			},
